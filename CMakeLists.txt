@@ -16,4 +16,4 @@ add_executable(
     src/client.cpp
 )
 
-target_link_libraries(${SERVER_NAME} -lmysqlclient)
+target_link_libraries(${SERVER_NAME} -lmysqlclient -pthread)

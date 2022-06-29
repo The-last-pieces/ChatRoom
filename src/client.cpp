@@ -1,45 +1,29 @@
-#include <cstdio>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-
-// using namespace std;
-
-#define ERROR_CHECK(ret, msg) \
-  if (ret == -1) {            \
-    perror(msg);              \
-    exit(-1);                 \
-  }
+#include "net/tcp/socket.hpp"
+#include <iostream>
 
 int main() {
-  const char* ip = "10.0.24.2";
-  const int port = 8889;
+    const char *ip   = "10.0.24.2";
+    const int   port = 8889;
 
-  // 客户端请求连接
-  int cfd = socket(AF_INET, SOCK_STREAM, 0);
-  ERROR_CHECK(cfd, "socket");
-  struct sockaddr_in addr;
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(port);
-  addr.sin_addr.s_addr = inet_addr(ip);
+    // 构造客户端socket
+    TcpSocket client(ip, port);
 
-  int ret = connect(cfd, (struct sockaddr*)&addr, sizeof(addr));
-  ERROR_CHECK(ret, "connect");
-  // 发送数据
-  while (true) {
-    char buf[1024] = {0};
-    printf("send: ");
-    scanf("%s", buf);
-    ret = write(cfd, buf, strlen(buf));
-    ERROR_CHECK(ret, "write");
-    // 接收数据
-    ret = read(cfd, buf, sizeof(buf));
-    ERROR_CHECK(ret, "read");
-    printf("recv: %s\n", buf);
-  }
+    // 连接服务端
+    client.connect_to_server();
 
-  return 0;
+    printf("client<%s:%d> start\n", client.get_ip().data(), client.get_port());
+
+    // 发送数据
+    while (true) {
+        std::string buf;
+        printf("input to send: ");
+        std::getline(std::cin, buf);
+
+        client.send_data(buf);
+
+        buf = client.recv_data(1024);
+        printf("recv from server: '\n%s\n'\n", buf.data());
+    }
+
+    return 0;
 }
