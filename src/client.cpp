@@ -1,28 +1,29 @@
 #include "net/socket.hpp"
 #include <iostream>
 
-const char *ip   = "10.0.24.2";
-const int   port = 8889;
+const char *ip      = "10.0.24.2";
+const int   port    = 8889;
+const int   buf_len = 1024;
 
 int tcp_main() {
     // 构造客户端socket
-    Socket client(ip, port);
+    Socket      client(ip, port, SocketType::TCP);
+    std::string buf;
 
     // 连接服务端
     client.connect_server();
 
-    printf("client<%s:%d> start\n", client.get_ip().data(), client.get_port());
+    printf("client<%s> start\n", client.get_desc().data());
 
     // 发送数据
     while (true) {
-        std::string buf;
         printf("input to send: ");
         std::getline(std::cin, buf);
 
         client.send_data(buf);
 
-        client.recv_data(buf, 1024);
-        printf("recv from server: '\n%s\n'\n", buf.data());
+        int len = client.recv_data(buf, buf_len);
+        printf("recv %d bytes from server: \n[%s]\n", len, buf.data());
     }
 
     return 0;
@@ -38,8 +39,8 @@ int udp_main() {
 
         client.sendto_data(buf);
 
-        int len = client.recvfrom_data(buf, 1024);
-        printf("recv %d from server: '\n%s\n'\n", len, buf.data());
+        int len = client.recvfrom_data(buf, buf_len);
+        printf("recv %d bytes from server: \n[%s]\n", len, buf.data());
     }
 }
 
