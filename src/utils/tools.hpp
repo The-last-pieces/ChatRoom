@@ -34,6 +34,12 @@ public:
     static void bzero(T &ptr) {
         memset(&ptr, 0, sizeof(T));
     }
+
+    // 范围约束
+    template <typename T>
+    static T clamp(const T &min, const T &value, const T &max) {
+        return std::max(min, std::min(value, max));
+    }
 };
 
 #endif
