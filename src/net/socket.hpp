@@ -131,7 +131,7 @@ public:
     }
 
     // tcp任意端调用:在原始指针上接收数据,返回成功接收的字节数.出错则返回-1
-    int recv_data_at(char *buf, int maxlen) {
+    int recv_data(char *buf, int maxlen) {
         int ret = recv(fd, buf, maxlen - 1, 0);
         if (ret >= 0) {
             buf[ret] = 0;
@@ -174,7 +174,7 @@ public:
     }
 
     // udp服务端调用:接收数据,返回成功接收的字节数.出错则返回-1. 并返回目的地址
-    int recvfrom_data_at(char *buf, int maxlen, struct sockaddr_in &addr) {
+    int recvfrom_data(char *buf, int maxlen, struct sockaddr_in &addr) {
         socklen_t len = sizeof(addr);
         int       ret = recvfrom(fd, buf, maxlen - 1, 0, (struct sockaddr *)&addr, &len);
         if (ret >= 0) {
@@ -184,9 +184,9 @@ public:
     }
 
     // udp客户端调用:接收数据,返回成功接收的字节数.出错则返回-1.不需要知道地址
-    int recvfrom_data_at(char *buf, int maxlen) {
+    int recvfrom_data(char *buf, int maxlen) {
         socklen_t len = sizeof(addr);
-        int       ret = recvfrom(fd, buf, maxlen, 0, NULL, 0);
+        int       ret = recvfrom(fd, buf, maxlen - 1, 0, NULL, 0);
         if (ret >= 0) {
             buf[ret] = 0;
         }
